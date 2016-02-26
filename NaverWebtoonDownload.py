@@ -28,6 +28,9 @@ import time
 # os, cStringIO modules for utility in control files
 import os, cStringIO
 
+# modules for image processing
+import sys
+from PIL import Image
 
 #####################   constants   #####################
 def WEB_TOON_ID() :
@@ -138,9 +141,41 @@ class NaverWebtoonCrawler :
 
             Log(  "image saved file at %s/page_%d.jpg" % (dirs, pageNumber)  )
 
+            # multiple image make to one image file.
+            self.ImageMerge(dirs,pageNumber)
+            
             # browser navigate to back
             # self.browser.back()
         return len(images) == 0
+
+    
+    # make one image file.
+    # dirs : directory name
+    # pageNumber : image total count
+    def ImageMerge(self, dirs, pageNumber) :
+        count = 0
+        files = []
+
+        #make image files list
+        for i in range(0, pageNumber): 
+            files.append('%s/page_%s.jpg'% (dirs,i+1))
+
+        images = map(Image.open, files)
+        widths, heights = zip(*(i.size for i in images))
+        max_width = max(widths)
+        total_height = sum(heights)
+        new_im = Image.new('RGB', (max_width, total_height))
+
+        y_offset = 0
+        
+        for im in images:
+            new_im.paste(im, (0,y_offset))
+            y_offset += im.size[1]
+
+        new_im.save("%s.jpg" % (dirs))
+
+        return
+
 
 #####################   Log function   #####################
 def Log(message) :
