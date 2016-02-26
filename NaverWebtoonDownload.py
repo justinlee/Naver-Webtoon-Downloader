@@ -123,7 +123,7 @@ class NaverWebtoonCrawler :
             # filtering conditions
             if src == "" :
                 continue # condition: must contain src
-            if src.find(".jpg") == -1 :
+            if src.find(".jpg") == -1 and src.find(".JPG") == -1:
                 continue # condition: must be .jpg file
 
             pageNumber += 1 # start from 1
